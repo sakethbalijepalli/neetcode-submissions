@@ -1,0 +1,77 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        ListNode head = null;
+        ListNode tail = null;
+
+        for (int i = 0; i < lists.length; i++) {
+            while (lists[i] != null) {
+                if (head == null) {
+                    head = lists[i];
+                    tail = head;
+                } else {
+                    tail.next = lists[i];
+                    tail = tail.next;
+                }
+                lists[i] = lists[i].next;
+            }
+        }
+        return sortList(head);
+    }
+
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+
+        ListNode mid = getMid(head);
+        ListNode right = mid.next;
+        mid.next = null;
+
+        ListNode leftSorted = sortList(head);
+        ListNode rightSorted = sortList(right);
+
+        return merge(leftSorted, rightSorted);
+    }
+
+    private ListNode getMid(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head.next;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        return slow;
+    }
+
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                tail.next = l1;
+                l1 = l1.next;
+            } else {
+                tail.next = l2;
+                l2 = l2.next;
+            }
+            tail = tail.next;
+        }
+
+        tail.next = (l1 != null) ? l1 : l2;
+        return dummy.next;
+    }
+}
